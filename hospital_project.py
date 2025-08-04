@@ -5,23 +5,22 @@ import os
 import shutil
 from PIL import Image, ImageTk
 
-# ------------------ INITIAL SETUP ------------------
 if not os.path.exists("profile_pics"):
     os.makedirs("profile_pics")
 
 conn = sqlite3.connect("users.db")
 cursor = conn.cursor()
 cursor.execute('''
-    CREATE TABLE IF NOT EXISTS users (
-        id INTEGER PRIMARY KEY AUTOINCREMENT,
-        role TEXT,
-        fname TEXT,
-        lname TEXT,
-        profile_pic TEXT,
-        username TEXT UNIQUE,
-        email TEXT,
-        password TEXT,
-        address TEXT
+    create table if not exists users (
+        id int primary key autoincrement,
+        role text,
+        fname text,
+        lname text,
+        profile_pic text,
+        username text unique,
+        email text,
+        password text,
+        address text
     )
 ''')
 conn.commit()
@@ -52,7 +51,7 @@ def signup_window(selected_role):
         except sqlite3.IntegrityError:
             messagebox.showerror("Error", "Username already exists!")
         except Exception as e:
-            messagebox.showerror("Error", str(e))
+            messagebox.showerror("Error Msg", str(e))
 
     signup = tk.Toplevel(root)
     signup.title("Signup")
@@ -98,7 +97,7 @@ def signup_window(selected_role):
 # Login Page
 def login_window(selected_role):
     def submit_login():
-        cursor.execute("SELECT * FROM users WHERE username=? AND password=? AND role=?",
+        cursor.execute("select * from users where username=? and password=? and role=?",
                        (username.get(), password.get(), selected_role))
         user = cursor.fetchone()
         if user:
@@ -127,8 +126,8 @@ def login_window(selected_role):
     tk.Entry(login, textvariable=password, show="*").pack()
     tk.Button(login, text="Login", width=10, height=2, command=submit_login).pack(pady=10)
 
-# ------------------ DASHBOARD ------------------
 
+#Dashboard page
 def show_dashboard(user):
     dashboard = tk.Toplevel(root)
     dashboard.title(f"{user[1]} Dashboard")
@@ -155,8 +154,8 @@ def show_dashboard(user):
         panel.image = img
         panel.pack(pady=10)
 
-# ------------------ ROLE SELECTION WINDOW ------------------
 
+#Role selection page
 def open_role_selection(action_type):
     def proceed(role_selected):
         role_win.destroy()
@@ -180,8 +179,8 @@ def open_role_selection(action_type):
     tk.Button(role_win, text="Patient", width=25, height=2, command=lambda: proceed("Patient")).pack(pady=10)
     tk.Button(role_win, text="Doctor", width=25, height=2, command=lambda: proceed("Doctor")).pack(pady=10)
 
-# ------------------ MAIN APP ------------------
 
+#Main Page
 root = tk.Tk()
 root.title("User Login App")
 root.geometry("500x300")
